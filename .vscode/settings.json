@@ -1,0 +1,7 @@
+{
+    "cSpell.language": "sp,lorem",
+    "cSpell.enableFiletypes": [
+        "jsonl"
+    ],
+    "editor.suggest.showStatusBar": true
+}

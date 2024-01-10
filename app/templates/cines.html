@@ -1,0 +1,24 @@
+﻿{% extends 'index.html' %}
+
+{% block contenido_interno %}
+
+<br/><h1>Nuestros Cines</h1><br/>
+{% for cine in cines %}
+    <div class="contenido-cine">
+	<img src="{{ url_for('static', filename ='img/cine/1.1.jpg') }}" width="227" height="170"/>
+	   <div class="datos-cine">
+			  <h4>{{ cine.RazonSocial }} </h4><br/>
+		<span>{{ cine.Direccion }} - {{ cine.Detalle }}<br/><br/>Teléfono: {{ cine.Telefonos}} anexo 865</span>
+	</div>
+	<br/>
+	<a href=" http://www.cinestar.com.pe/multicines/cine/Cinestar-Excelsior">
+		<img src="{{ url_for('static', filename ='img/varios/ico-info2.png') }}" width="150" height="40"/>
+	</a>
+    </div>
+{% endfor %}
+	
+{% endblock %}
+
+# http://www.cinestar.com.pe/multicines/cine/Cinestar-Excelsior
+	
+			
