@@ -44,6 +44,15 @@ def peliculas():
      #return cartelera
      return render_template('peliculas.html', peliculas=peliculas)
 
+@app.route('/peliculas/cartelera/pelicula')
+def pelicula():
+     cursor = cnx.cursor(dictionary=True)
+     cursor.callproc('sp_getPelicula', (1,))
+     for data in cursor.stored_results():
+          pelicula = data.fetchall()
+     cursor.close()
+     #return pelicula
+     return render_template('pelicula.html', pelicula=pelicula)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
