@@ -12,7 +12,7 @@
 	</div>
 	<br/>
 	<a href=" http://www.cinestar.com.pe/multicines/cine/Cinestar-Excelsior">
-		<img src="{{ url_for('static', filename ='img/varios/ico-info2.png') }}" width="150" height="40"/>
+		<img src="{{ url_for('static', filename='img/pelicula/' + str(pelicula.id) + '.jpg') }}" width="160" height="226" alt="{{ pelicula.Titulo }}" /><br/><br/>
 	</a>
     </div>
 {% endfor %}
