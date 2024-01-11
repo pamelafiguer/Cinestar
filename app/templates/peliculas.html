@@ -11,7 +11,7 @@
 						<p> {{ pelicula.Sinopsis }}</p>
 						<br/>
                        	<div class="boton-pelicula"> 
-                       		<a href="http://www.cinestar.com.pe/cartelera/pelicula/Locos-de-Amor-2" >
+                       		<a href="{{ url_for('nombre', id = '1') }}" >
                        			<img src="{{ url_for('static', filename ='img/varios/btn-mas-info.jpg') }}" width="120" height="30" alt="Ver info"/>
                        		</a>
                			</div>

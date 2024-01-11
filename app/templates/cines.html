@@ -11,7 +11,7 @@
 		<span>{{ cine.Direccion }} - {{ cine.Detalle }}<br/><br/>Teléfono: {{ cine.Telefonos}} anexo 865</span>
 	</div>
 	<br/>
-	<a href=" http://www.cinestar.com.pe/multicines/cine/Cinestar-Excelsior">
+	<a href="{{ url_for('cine', nombre= 'print(CinestarExcelsior)')}}">
 		<img src="{{ url_for('static', filename ='img/varios/ico-info2.png') }}" width="150" height="40"/> 
 	</a>
     </div>
