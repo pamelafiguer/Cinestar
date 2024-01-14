@@ -11,12 +11,12 @@
 						<p> {{ pelicula.Sinopsis }}</p>
 						<br/>
                        	<div class="boton-pelicula"> 
-                       		<a href= "{{ url_for('peli', id = '1') }}">
+                       		<a href= "{{ url_for( 'peliculas', idd = pelicula['id']) }}">
                        			<img src="{{ url_for('static', filename ='img/varios/btn-mas-info.jpg') }}" width="120" height="30" alt="Ver info"/>
                        		</a>
                			</div>
                			<div class="boton-pelicula"> 
-               				<a href="https://www.youtube.com/v/"  target=_blank  onclick="return hs.htmlExpand(this, { objectType: 'iframe' } )" >
+               				<a href="https://www.youtube.com/v/{{pelicula['Link']}}" target=_blank  onclick="return hs.htmlExpand(this, { objectType: 'iframe' } )" >
                					<img src="{{ url_for('static', filename ='img/varios/btn-trailer.jpg') }}" width="120" height="30" alt="Ver trailer"/>
                				</a>
                         </div> 

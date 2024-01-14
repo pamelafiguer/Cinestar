@@ -8,160 +8,143 @@ app = Flask (__name__)
 
 config = {
 
-     'host' : 'localhost',
+   'host' : 'localhost',
 
-     'user' : 'root',
+   'user' : 'root',
 
-     'password' : '',
+   'password' : '',
 
-     'database' : 'cinestar' 
+   'database' : 'cinestar' 
 
 }
 
 
 configRemote = {
 
-     'host' : 'srv1101.hstgr.io',
+   'host' : 'srv1101.hstgr.io',
 
-     'user' : 'u584908256_cinestar',
+   'user' : 'u584908256_cinestar',
 
-     'password' : 'Senati2023@',
+   'password' : 'Senati2023@',
 
-     'database' : 'u584908256_cinestar' 
+   'database' : 'u584908256_cinestar' 
 
 }
 
-
 cnx = mysql.connector.connect(**config)
 
+
+
+def obtener_cines():
+    cursor = cnx.cursor()
+    cursor.execute("SELECT id, RazonSocial  FROM cine ORDER BY id ASC")
+    lista_de_cines = [{'id': row[0], 'RazonSocial': row[1], 'Direccion':[2], 'Detalle':[3], 'Telefonos':[4] } for row in cursor.fetchall()]
+    cursor.close()
+    return lista_de_cines
+
+def obtener_peliculas():
+    cursor = cnx.cursor()
+    cursor.execute("SELECT id, Titulo, Sinopsis, Link  FROM pelicula ORDER BY id ASC")
+    lista_de_peliculas = [{'id': row[0], 'Titulo': row[1], 'Sinopsis':[2], 'Link':[3]} for row in cursor.fetchall()]
+    cursor.close()
+    return lista_de_peliculas
 
 @app.route('/')
 
 def index():
 
-     print(url_for('index'))
-     print(url_for('cines'))
-     print(url_for('peliculas'))
+   print(url_for('index'))
+   print(url_for('cines'))
+   print(url_for('peli'))
+   print(url_for('peliculas'))
 
-     print(url_for('peli', id = '1'))
 
-     print(url_for('cines', nombre = 'CinestarExcelsior)'))
-
-     
-
-     return render_template('index.html')
-
+   return render_template('index.html')
 
 
 @app.route('/cines')
 
 def cines():
-
-     cursor = cnx.cursor(dictionary=True)
-
-     cursor.callproc('sp_getCines')
-
-     for data in cursor.stored_results():
-
-          cines = data.fetchall()
-     cursor.close()
-
-     #return cines
-
-     return render_template('cines.html', cines=cines)
+   lista_de_cines = obtener_cines()
+   cursor = cnx.cursor(dictionary=True)
+   cursor.callproc('sp_getCines')
+   for data in cursor.stored_results():
+      
+      cines = data.fetchall()
+      
+   cursor.close()
+      #return cines
+   return render_template('cines.html', cines=cines)
 
 
-@app.route('/cartelera')
+@app.route('/peliculas&id=cartelera')
 
-def peliculas():
-     
+def peli():
+   
+   lista_peliculas = obtener_peliculas()
 
-     cursor = cnx.cursor(dictionary=True)
+   cursor = cnx.cursor(dictionary=True)
 
-     cursor.callproc('sp_getPeliculass')
+   cursor.callproc('sp_getPeliculass')
 
-     for data in cursor.stored_results():
+   for data in cursor.stored_results():
 
-          peliculas = data.fetchall()
-     cursor.close()
-
-     #return peliculas
-
-     return render_template('peliculas.html', peliculas=peliculas)
-
-
-@app.route('/cartelera/<id>')
-
-def peli(id):
-
-     cursor = cnx.cursor(dictionary=True)
-
-     cursor.callproc('sp_getPelicula', (1, ))
-
-     for data in cursor.stored_results():
-
-          nombre = data.fetchall()
-     cursor.close()
-
-     #return nombre
-
-     return render_template('pelicula.html', pelicula=nombre)
+      peliculas = data.fetchall()
+   cursor.close()
+   
+   return render_template('peliculas.html', peliculas=peliculas)
 
 
+@app.route('/pelicula&id=<idd>')
 
-#@app.route('/cines/<nombre>')
+def peliculas(idd):
 
-#def cine(nombre):
+   lista_peliculas = obtener_peliculas()
 
- #    cursor = cnx.cursor(dictionary=True)
+   cursor = cnx.cursor(dictionary=True)
+   
+   try:
+      cursor.callproc('sp_getPelicula', (idd, ))
+      for data in cursor.stored_results():
+            pelicula = data.fetchall()
+   finally:
+      cursor.close() 
+   return render_template('pelicula.html', pelicula=pelicula)
+   
 
- #    A = cursor.callproc('sp_getCineTarifas',(1,))
+@app.route('/cine&id=<cine_id>')
+def cine(cine_id):
+   
 
- #    B = cursor.callproc('sp_getCinePeliculas',(1,))
+   cursor = cnx.cursor(dictionary=True)
+   cursor.callproc('sp_getCineTarifas', (cine_id, ))
+   
+   for data in cursor.stored_results():
+   
+      tarifas = data.fetchall()
+   cursor.nextset()
+   
+   cursor.callproc('sp_getCinePeliculas', (cine_id, ))
+   for data in cursor.stored_results():
+      horarios = data.fetchall()
+   
+   cursor.nextset()
 
- #    C = cursor.callproc('sp_getCines')
-    
+   cursor.callproc('sp_getCine', (cine_id, ))
+   for data in cursor.stored_results():
+      
+      cines = data.fetchall()
 
-  #   for data in cursor.stored_results():
+   return render_template('cine.html', tarifas=tarifas, horarios=horarios, cines=cines)
 
-  #        ciness = data.fetchall()
-
-    # cursor.close()
-
-  #   return ciness
-
-   #  return render_template('cine.html', cine=ciness)
+   cursor.close()
 
 
 
-
-@app.route('/cines/<nombre>')
-def cine(nombre):
-    cursor = cnx.cursor(dictionary=True)
-    
-    cursor.callproc('sp_getCineTarifas', (1,))
-    for data in cursor.stored_results():
-        tarifas = data.fetchall()
-        
-    cursor.nextset()
-
-    cursor.callproc('sp_getCinePeliculas', (1,))
-    for data in cursor.stored_results():
-        peliculas = data.fetchall()
-        
-    cursor.nextset()
-
-    cursor.callproc('sp_getCines')
-    for data in cursor.stored_results():
-        cines = data.fetchall()
-
-    cursor.close()
-
-    return render_template('cine.html', tarifas=tarifas, peliculas=peliculas, cines=cines)
 
 if __name__ == '__main__':
 
-    app.run(debug=True, port=5000)
+   app.run(debug=True, port=5000)
 
 
 
