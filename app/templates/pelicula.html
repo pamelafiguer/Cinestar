@@ -33,7 +33,7 @@
 							</div>
 						</div>
 					</div>
-					<img src="{{ url_for('static', filename='img/pelicula/1.jpg')}}" width="160" height="226"><br/><br/>
+					<img src="{{ url_for('static', filename='img/pelicula/' +  peliculas.id|string + '.jpg') }}" width="160" height="226"><br/><br/>
 				</div>
 				<div class="pelicula-video">
 					<embed  src= "https://www.youtube.com/v/{{peliculas['Link']}}" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="580" height="400">

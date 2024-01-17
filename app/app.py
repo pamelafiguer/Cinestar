@@ -14,7 +14,7 @@ config = {
 
    'password' : '',
 
-   'database' : 'cinestar' 
+   'database' : 'CineStar' 
 
 }
 
@@ -36,18 +36,18 @@ cnx = mysql.connector.connect(**config)
 
 
 def obtener_cines():
-    cursor = cnx.cursor()
-    cursor.execute("SELECT id, RazonSocial  FROM cine ORDER BY id ASC")
-    lista_de_cines = [{'id': row[0], 'RazonSocial': row[1], 'Direccion':[2], 'Detalle':[3], 'Telefonos':[4] } for row in cursor.fetchall()]
-    cursor.close()
-    return lista_de_cines
+   cursor = cnx.cursor()
+   cursor.execute("SELECT id, RazonSocial  FROM Cine ORDER BY id ASC")
+   lista_de_cines = [{'id': row[0], 'RazonSocial': row[1], 'Direccion':[2], 'Detalle':[3], 'Telefonos':[4] } for row in cursor.fetchall()]
+   cursor.close()
+   return lista_de_cines
 
 def obtener_peliculas():
-    cursor = cnx.cursor()
-    cursor.execute("SELECT id, Titulo, Sinopsis, Link  FROM pelicula ORDER BY id ASC")
-    lista_de_peliculas = [{'id': row[0], 'Titulo': row[1], 'Sinopsis':[2], 'Link':[3]} for row in cursor.fetchall()]
-    cursor.close()
-    return lista_de_peliculas
+   cursor = cnx.cursor()
+   cursor.execute("SELECT id, Titulo, Sinopsis, Link  FROM Pelicula ORDER BY id ASC")
+   lista_de_peliculas = [{'id': row[0], 'Titulo': row[1], 'Sinopsis':[2], 'Link':[3]} for row in cursor.fetchall()]
+   cursor.close()
+   return lista_de_peliculas
 
 @app.route('/')
 
@@ -56,7 +56,7 @@ def index():
    print(url_for('index'))
    print(url_for('cines'))
    print(url_for('peli'))
-   print(url_for('peliculas'))
+   print(url_for('peliculas', idd = id))
 
 
    return render_template('index.html')
@@ -65,7 +65,7 @@ def index():
 @app.route('/cines')
 
 def cines():
-   lista_de_cines = obtener_cines()
+  
    cursor = cnx.cursor(dictionary=True)
    cursor.callproc('sp_getCines')
    for data in cursor.stored_results():
@@ -77,7 +77,7 @@ def cines():
    return render_template('cines.html', cines=cines)
 
 
-@app.route('/peliculas&id=cartelera')
+@app.route('/peliculas?id=cartelera')
 
 def peli():
    
@@ -95,24 +95,22 @@ def peli():
    return render_template('peliculas.html', peliculas=peliculas)
 
 
-@app.route('/pelicula&id=<idd>')
+@app.route('/pelicula?id=<idd>')
 
 def peliculas(idd):
 
    lista_peliculas = obtener_peliculas()
 
    cursor = cnx.cursor(dictionary=True)
-   
-   try:
-      cursor.callproc('sp_getPelicula', (idd, ))
-      for data in cursor.stored_results():
-            pelicula = data.fetchall()
-   finally:
+   cursor.callproc('sp_getPelicula', (idd, ))
+   for data in cursor.stored_results():
+      pelicula = data.fetchall()
+
       cursor.close() 
    return render_template('pelicula.html', pelicula=pelicula)
    
 
-@app.route('/cine&id=<cine_id>')
+@app.route('/cine?id=<cine_id>')
 def cine(cine_id):
    
 
@@ -138,8 +136,6 @@ def cine(cine_id):
    return render_template('cine.html', tarifas=tarifas, horarios=horarios, cines=cines)
 
    cursor.close()
-
-
 
 
 if __name__ == '__main__':

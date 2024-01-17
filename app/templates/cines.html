@@ -9,7 +9,7 @@
 {% for cine in cines %}
     <div class="contenido-cine">
 		
-	<img src="{{ url_for('static', filename ='img/cine/1.1.jpg') }}" width="227" height="170"/>
+	<img src="{{ url_for('static', filename ='img/cine/' + cine.id|string + '.1.jpg') }}" width="227" height="170"/>
 	   <div class="datos-cine">
 			  <h4>{{ cine.RazonSocial }} </h4><br/>
 		<span>{{ cine.Direccion }} - {{ cine.Detalle }}<br/><br/>Teléfono: {{ cine.Telefonos}} anexo 865</span>
