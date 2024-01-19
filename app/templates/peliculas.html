@@ -21,7 +21,7 @@
                				</a>
                         </div> 
 					</div>
-					<img src="{{ url_for('static', filename ='img/pelicula/' + pelicula.id|string + '.jpg') }}" width="160" height="226"/><br/><br/>
+					<img src="{{ url_for('static', filename ='img/pelicula/' + pelicula.id|string() + '.jpg') }}" width="160" height="226"/><br/><br/>
 	</div>			
 
 {% endfor %}
