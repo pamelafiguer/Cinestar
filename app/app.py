@@ -42,6 +42,7 @@ def index():
    print(url_for('cines'))
    print(url_for('cartelera'))
    print(url_for('peliculas', idd = id))
+   print(url_for('estrenos'))
    return render_template('index.html')
 
 
@@ -64,6 +65,15 @@ def cartelera():
       peliculas = data.fetchall()
    cursor.close()
    return render_template('peliculas.html', peliculas=peliculas)
+
+@app.route('/peliculas/estrenos')
+def estrenos():
+   cursor = cnx.cursor(dictionary=True)
+   cursor.callproc('sp_getPeliculasEstrenos')
+   for data in cursor.stored_results():
+      estrenos = data.fetchall()
+   cursor.close()
+   return render_template('estrenos.html', estrenos = estrenos)
 
 
 @app.route('/pelicula/id=<idd>')
