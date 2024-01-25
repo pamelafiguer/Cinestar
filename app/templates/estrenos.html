@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'peliculas.html' %}
 
 {% block contenido_interno %}
 
@@ -11,7 +11,7 @@
 						<p> {{ estreno.Sinopsis }}</p>
 						<br/>
                        	<div class="boton-pelicula"> 
-                       		<a href= "{{ url_for( 'peliculas' , idd= estreno['id']) }}">
+                       		<a href= "{{ url_for( 'pelicula' , id= estreno['id']) }}">
                        			<img src="{{ url_for('static', filename ='img/varios/btn-mas-info.jpg') }}" width="120" height="30" alt="Ver info"/>
                        		</a>
                			</div>

@@ -1,9 +1,10 @@
 from flask import Flask, render_template, url_for
-
+from flask_cors import CORS
 import mysql.connector
 
 
 app = Flask (__name__)
+
 
 config = {
 
@@ -13,7 +14,7 @@ config = {
 
    'password' : '',
 
-   'database' : 'CineStar' 
+   'database' : 'cinestar' 
 
 }
 
@@ -31,82 +32,76 @@ configRemote = {
 }
 
 cnx = mysql.connector.connect(**config)
+cursor = cnx.cursor(dictionary=True)
+
 
 
 @app.route('/')
-
 def index():
-
-#direciones web
-   print(url_for('index'))
-   print(url_for('cines'))
-   print(url_for('cartelera'))
-   print(url_for('peliculas', idd = id))
-   print(url_for('estrenos'))
    return render_template('index.html')
+
+
 
 
 @app.route('/cines')
 def cines():
-   cursor = cnx.cursor(dictionary=True)
    cursor.callproc('sp_getCines')
    for data in cursor.stored_results():
       cines = data.fetchall()
-   cursor.close()
-   return render_template('cines.html', cines=cines)
+   return render_template('cines.html', cines=cines, id = id)
 
 
 
-@app.route('/peliculas/cartelera')
-def cartelera():
-   cursor = cnx.cursor(dictionary=True)
-   cursor.callproc('sp_getPeliculass')
-   for data in cursor.stored_results():
-      peliculas = data.fetchall()
-   cursor.close()
-   return render_template('peliculas.html', peliculas=peliculas)
 
-@app.route('/peliculas/estrenos')
-def estrenos():
-   cursor = cnx.cursor(dictionary=True)
-   cursor.callproc('sp_getPeliculasEstrenos')
-   for data in cursor.stored_results():
-      estrenos = data.fetchall()
-   cursor.close()
-   return render_template('estrenos.html', estrenos = estrenos)
-
-
-@app.route('/pelicula/id=<idd>')
-def peliculas(idd):
-   cursor = cnx.cursor(dictionary=True)
-   cursor.callproc('sp_getPelicula', [idd, ])
-   for data in cursor.stored_results():
-      pelicula = data.fetchall()
-      cursor.close() 
-   return render_template('pelicula.html', pelicula=pelicula, idd=idd)
-   
-
-@app.route('/cine/id=<cine_id>')
-def cine(cine_id):
-   cursor = cnx.cursor(dictionary=True)
-   cursor.callproc('sp_getCineTarifas', (cine_id, ))
+@app.route('/cine/<int:id>')
+def cine(id):
+   cursor.callproc('sp_getCineTarifas', (id, ))
    for data in cursor.stored_results():
       tarifas = data.fetchall()
-   cursor.nextset()
    
-   cursor.callproc('sp_getCinePeliculas', (cine_id, ))
+   cursor.callproc('sp_getCinePeliculas', (id, ))
    for data in cursor.stored_results():
       horarios = data.fetchall()
-   cursor.nextset()
    
-   query = "select * from Cine where id = %s" 
-   cursor.execute(query, (cine_id,))
-   cines = cursor.fetchone()
-   cursor.nextset()
-   cursor.close()
+   cursor.callproc('sp_getCine', (id, ))
+   for data in cursor.stored_results():
+      cines = data.fetchall()
    
-   return render_template('cine.html', tarifas=tarifas, horarios=horarios, cines=cines, cine_id=cine_id)
+   return render_template('cine.html', tarifas=tarifas, horarios=horarios, cines=cines, id=id)
 
+
+
+@app.route('/peliculas/<id>')
+def peliculas(id):
+   id = 1 if id == 'cartelera' else 2 if id  == 'estrenos' else 0 
+   if id == 0 : 
+      return render_template('index.html')
+   
+   if id == 1:
+         cursor.callproc('sp_getPeliculass')
+         for data in cursor.stored_results():
+            peliculas = data.fetchall()
+         return render_template('peliculas.html', peliculas = peliculas)
+   if id == 2:
+         cursor.callproc('sp_getPeliculasEstrenoss')
+         for data in cursor.stored_results():
+            estrenos = data.fetchall()
+         return render_template('estrenos.html', estrenos = estrenos)
+   
+   
+
+
+
+
+@app.route('/pelicula/<int:id>')
+def pelicula(id):
+   #cursor.execute("select * from pelicula where id = %s", (id,))
+   cursor.callproc('sp_getPelicula',(id, ))
+   for data in cursor.stored_results(): 
+      pelicula = data.fetchall()
+   return render_template('pelicula.html', pelicula=pelicula, id = id)
+
+   cursor.close()
 
 if __name__ == '__main__':
    app.run(debug=True, port=5000)
