@@ -1,5 +1,4 @@
-from flask import Flask, render_template, url_for
-from flask_cors import CORS
+from flask import Flask, render_template
 import mysql.connector
 
 
@@ -39,8 +38,6 @@ cursor = cnx.cursor(dictionary=True)
 @app.route('/')
 def index():
    return render_template('index.html')
-
-
 
 
 @app.route('/cines')
